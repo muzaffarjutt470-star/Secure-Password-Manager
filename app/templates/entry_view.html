@@ -1,0 +1,477 @@
+{% extends "base.html" %}
+
+{% block title %}{{ entry.title }} — SecureVault{% endblock %}
+
+{% block content %}
+<div class="entry-view-page">
+
+    <!-- Top navigation -->
+    <div class="entry-view-topbar">
+        <a href="{{ url_for('vault.dashboard') }}" class="back-link">
+            <span class="back-icon">←</span>
+            <span>Back to Vault</span>
+        </a>
+
+        <div class="view-security-status">
+            <span class="status-dot"></span>
+            <span>SECURE SESSION</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <section class="entry-view-header">
+        <div class="entry-title-area">
+
+            <div class="entry-large-icon">
+                <span>🔐</span>
+            </div>
+
+            <div>
+                <div class="entry-category-row">
+                    <span class="entry-category">
+                        {{ entry.category or "General" }}
+                    </span>
+
+                    <span class="encrypted-badge">
+                        <span>✓</span>
+                        ENCRYPTED
+                    </span>
+                </div>
+
+                <h1>{{ entry.title }}</h1>
+
+                <p class="entry-subtitle">
+                    Secure credential record
+                </p>
+            </div>
+        </div>
+
+        <div class="entry-actions">
+            <a
+                href="{{ url_for('vault.edit_entry', entry_id=entry.id) }}"
+                class="btn btn-secondary entry-action-btn"
+            >
+                <span>✎</span>
+                Edit
+            </a>
+
+            <button
+                type="button"
+                class="btn btn-danger entry-action-btn"
+                id="deleteEntryButton"
+            >
+                <span>⌫</span>
+                Delete
+            </button>
+        </div>
+    </section>
+
+    <!-- Security banner -->
+    <div class="view-security-banner">
+        <div class="security-banner-icon">🛡</div>
+
+        <div class="security-banner-content">
+            <strong>Protected Credential</strong>
+            <span>
+                Sensitive values are protected by SecureVault's encryption layer.
+                Only reveal information when necessary.
+            </span>
+        </div>
+
+        <div class="security-banner-tech">
+            <span>AES-256-GCM</span>
+            <span>•</span>
+            <span>CSRF</span>
+            <span>•</span>
+            <span>AUTHENTICATED</span>
+        </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="entry-view-grid">
+
+        <!-- Credential information -->
+        <main class="credential-details-card">
+
+            <div class="details-card-header">
+                <div>
+                    <span class="section-label">CREDENTIAL</span>
+                    <h2>Account Information</h2>
+                </div>
+
+                <div class="record-indicator">
+                    <span class="record-dot"></span>
+                    ACTIVE RECORD
+                </div>
+            </div>
+
+            <div class="credential-fields">
+
+                <!-- Username -->
+                <div class="credential-field">
+                    <div class="field-heading">
+                        <label for="usernameValue">Username</label>
+                        <span class="field-protection">PROTECTED</span>
+                    </div>
+
+                    <div class="secure-value-row">
+                        <div
+                            class="secure-value"
+                            id="usernameValue"
+                            data-value="{{ entry.username or '' }}"
+                        >
+                            <span class="value-text">
+                                {{ entry.username or "No username saved" }}
+                            </span>
+                        </div>
+
+                        {% if entry.username %}
+                        <button
+                            type="button"
+                            class="copy-field-btn"
+                            data-copy-target="usernameValue"
+                            title="Copy username"
+                        >
+                            ⧉
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div class="credential-field password-field-section">
+                    <div class="field-heading">
+                        <label for="passwordValue">Password</label>
+                        <span class="field-protection">SENSITIVE</span>
+                    </div>
+
+                    <div class="secure-value-row password-row">
+
+                        <div
+                            class="secure-value password-value"
+                            id="passwordValue"
+                            data-value="{{ entry.password or '' }}"
+                        >
+                            <span class="masked-password">
+                                ••••••••••••••••
+                            </span>
+
+                            <span class="revealed-password" hidden>
+                                {{ entry.password or "" }}
+                            </span>
+                        </div>
+
+                        <button
+                            type="button"
+                            class="field-icon-btn"
+                            id="togglePassword"
+                            title="Reveal password"
+                            aria-label="Reveal password"
+                        >
+                            <span id="passwordToggleIcon">◉</span>
+                        </button>
+
+                        {% if entry.password %}
+                        <button
+                            type="button"
+                            class="copy-field-btn"
+                            data-copy-target="passwordValue"
+                            title="Copy password"
+                        >
+                            ⧉
+                        </button>
+                        {% endif %}
+                    </div>
+
+                    <div class="password-warning">
+                        <span>⚠</span>
+                        Avoid revealing or copying passwords on shared or public devices.
+                    </div>
+                </div>
+
+                <!-- URL -->
+                <div class="credential-field">
+                    <div class="field-heading">
+                        <label for="urlValue">Website / URL</label>
+                        <span class="field-protection">PROTECTED</span>
+                    </div>
+
+                    <div class="secure-value-row">
+                        <div
+                            class="secure-value url-value"
+                            id="urlValue"
+                            data-value="{{ entry.url or '' }}"
+                        >
+                            {% if entry.url %}
+                                <span class="value-text">{{ entry.url }}</span>
+                            {% else %}
+                                <span class="empty-value">No URL saved</span>
+                            {% endif %}
+                        </div>
+
+                        {% if entry.url %}
+                        <button
+                            type="button"
+                            class="copy-field-btn"
+                            data-copy-target="urlValue"
+                            title="Copy URL"
+                        >
+                            ⧉
+                        </button>
+                        {% endif %}
+                    </div>
+
+                    {% if entry.url %}
+                    <a
+                        href="{{ entry.url }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="open-url-link"
+                    >
+                        Open website ↗
+                    </a>
+                    {% endif %}
+                </div>
+
+                <!-- Category -->
+                <div class="credential-field">
+                    <div class="field-heading">
+                        <label>Category</label>
+                        <span class="field-protection">METADATA</span>
+                    </div>
+
+                    <div class="category-display">
+                        <span class="category-icon">◈</span>
+                        <span>{{ entry.category or "General" }}</span>
+                    </div>
+                </div>
+
+                <!-- Notes -->
+                <div class="credential-field notes-field">
+                    <div class="field-heading">
+                        <label>Secure Notes</label>
+                        <span class="field-protection">PROTECTED</span>
+                    </div>
+
+                    <div class="notes-display">
+                        {% if entry.notes %}
+                            {{ entry.notes }}
+                        {% else %}
+                            <span class="empty-notes">
+                                No secure notes saved for this credential.
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    {% if entry.notes %}
+                    <button
+                        type="button"
+                        class="copy-notes-btn"
+                        data-copy-target="notesValue"
+                    >
+                        ⧉ Copy Notes
+                    </button>
+
+                    <textarea id="notesValue" class="hidden-copy-source" readonly>{{ entry.notes }}</textarea>
+                    {% endif %}
+                </div>
+
+            </div>
+
+            <!-- Bottom actions -->
+            <div class="credential-bottom-actions">
+                <a
+                    href="{{ url_for('vault.dashboard') }}"
+                    class="btn btn-secondary"
+                >
+                    ← Back to Vault
+                </a>
+
+                <a
+                    href="{{ url_for('vault.edit_entry', entry_id=entry.id) }}"
+                    class="btn btn-primary"
+                >
+                    ✎ Edit Credential
+                </a>
+            </div>
+
+        </main>
+
+        <!-- Security sidebar -->
+        <aside class="entry-security-sidebar">
+
+            <div class="security-side-card">
+                <div class="side-card-icon">🛡</div>
+
+                <span class="section-label">SECURITY STATUS</span>
+
+                <h3>Credential Protected</h3>
+
+                <p>
+                    This record is protected by SecureVault's application
+                    security controls.
+                </p>
+
+                <div class="security-status-list">
+
+                    <div class="security-status-item">
+                        <span class="security-check">✓</span>
+                        <div>
+                            <strong>AES-256-GCM</strong>
+                            <small>Authenticated encryption</small>
+                        </div>
+                    </div>
+
+                    <div class="security-status-item">
+                        <span class="security-check">✓</span>
+                        <div>
+                            <strong>Fresh Nonces</strong>
+                            <small>Unique encryption nonces</small>
+                        </div>
+                    </div>
+
+                    <div class="security-status-item">
+                        <span class="security-check">✓</span>
+                        <div>
+                            <strong>CSRF Protection</strong>
+                            <small>Request validation active</small>
+                        </div>
+                    </div>
+
+                    <div class="security-status-item">
+                        <span class="security-check">✓</span>
+                        <div>
+                            <strong>Access Control</strong>
+                            <small>User-scoped credentials</small>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Record information -->
+            <div class="record-info-card">
+
+                <div class="record-info-header">
+                    <span class="section-label">RECORD INFO</span>
+                </div>
+
+                <div class="record-info-row">
+                    <span>Record ID</span>
+                    <strong>#{{ entry.id }}</strong>
+                </div>
+
+                <div class="record-info-row">
+                    <span>Category</span>
+                    <strong>{{ entry.category or "General" }}</strong>
+                </div>
+
+                {% if entry.created_at %}
+                <div class="record-info-row">
+                    <span>Created</span>
+                    <strong>{{ entry.created_at.strftime('%Y-%m-%d') }}</strong>
+                </div>
+                {% endif %}
+
+                {% if entry.updated_at %}
+                <div class="record-info-row">
+                    <span>Updated</span>
+                    <strong>{{ entry.updated_at.strftime('%Y-%m-%d') }}</strong>
+                </div>
+                {% endif %}
+
+            </div>
+
+            <!-- Privacy notice -->
+            <div class="view-privacy-card">
+                <div class="privacy-icon">🔒</div>
+
+                <div>
+                    <strong>Security Reminder</strong>
+                    <p>
+                        Never share your master password. SecureVault will
+                        never ask you to send it through chat or email.
+                    </p>
+                </div>
+            </div>
+
+        </aside>
+
+    </div>
+</div>
+
+<!-- Delete confirmation modal -->
+<div class="delete-modal-overlay" id="deleteModal" hidden>
+    <div class="delete-modal">
+
+        <button
+            type="button"
+            class="modal-close"
+            id="closeDeleteModal"
+            aria-label="Close"
+        >
+            ×
+        </button>
+
+        <div class="delete-modal-icon">
+            !
+        </div>
+
+        <span class="section-label danger-label">DANGEROUS ACTION</span>
+
+        <h2>Delete Credential?</h2>
+
+        <p>
+            You are about to permanently delete
+            <strong>{{ entry.title }}</strong>.
+            This action cannot be undone.
+        </p>
+
+        <div class="delete-modal-warning">
+            <span>⚠</span>
+            Make sure you no longer need this credential before continuing.
+        </div>
+
+        <div class="delete-modal-actions">
+            <button
+                type="button"
+                class="btn btn-secondary"
+                id="cancelDelete"
+            >
+                Cancel
+            </button>
+
+            <form
+                method="POST"
+                action="{{ url_for('vault.delete_entry', entry_id=entry.id) }}"
+                id="deleteEntryForm"
+            >
+                <input
+                    type="hidden"
+                    name="csrf_token"
+                    value="{{ csrf_token }}"
+                >
+
+                <button
+                    type="submit"
+                    class="btn btn-danger"
+                >
+                    Permanently Delete
+                </button>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<!-- Copy notification -->
+<div class="copy-toast" id="copyToast" hidden>
+    <span class="toast-icon">✓</span>
+    <span id="copyToastText">Copied securely</span>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+{% endblock %}x

@@ -1,0 +1,338 @@
+{% extends 'base.html' %}
+
+{% block title %}SecureVault — Secure Password Manager{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+
+    <div class="hero-badge">
+        <span class="status-dot"></span>
+        SECURE-BY-DESIGN PASSWORD VAULT
+    </div>
+
+    <h1>
+        Your passwords.<br>
+        <span>Encrypted. Yours.</span>
+    </h1>
+
+    <p class="hero-description">
+        SecureVault is a local-first password manager designed to protect
+        your credentials using modern password hashing and authenticated
+        encryption.
+    </p>
+
+    <div class="hero-actions">
+
+        <a
+            class="button primary large"
+            href="{{ url_for('auth.register') }}"
+        >
+            Create Secure Vault
+            <span>→</span>
+        </a>
+
+        <a
+            class="button secondary large"
+            href="{{ url_for('auth.login') }}"
+        >
+            Sign In
+        </a>
+
+    </div>
+
+    <div class="hero-note">
+        <span>🔒</span>
+        Built with Argon2id + AES-256-GCM
+    </div>
+
+</section>
+
+
+<!-- Security Features -->
+
+<section class="landing-section">
+
+    <div class="section-heading">
+        <span class="section-label">SECURITY ARCHITECTURE</span>
+
+        <h2>
+            Built for credential security
+        </h2>
+
+        <p>
+            Security is integrated into the application architecture,
+            not added as an afterthought.
+        </p>
+    </div>
+
+
+    <div class="feature-grid">
+
+        <article class="feature-card">
+
+            <div class="feature-icon purple">
+                🔑
+            </div>
+
+            <span class="feature-number">01</span>
+
+            <h3>
+                Argon2id Authentication
+            </h3>
+
+            <p>
+                Master passwords are protected using Argon2id with a unique
+                per-user salt, providing strong resistance against password
+                cracking attacks.
+            </p>
+
+        </article>
+
+
+        <article class="feature-card">
+
+            <div class="feature-icon blue">
+                🛡️
+            </div>
+
+            <span class="feature-number">02</span>
+
+            <h3>
+                AES-256-GCM Encryption
+            </h3>
+
+            <p>
+                Sensitive vault fields are encrypted using authenticated
+                AES-256-GCM encryption with fresh nonces for encrypted data.
+            </p>
+
+        </article>
+
+
+        <article class="feature-card">
+
+            <div class="feature-icon green">
+                🧪
+            </div>
+
+            <span class="feature-number">03</span>
+
+            <h3>
+                Security Tested
+            </h3>
+
+            <p>
+                Automated tests cover authentication, cryptographic
+                operations, authorization, CSRF protection and security
+                headers.
+            </p>
+
+        </article>
+
+    </div>
+
+</section>
+
+
+<!-- Security Highlights -->
+
+<section class="security-section">
+
+    <div class="security-panel">
+
+        <div class="security-panel-header">
+
+            <div>
+                <span class="section-label">
+                    DEFENSE LAYERS
+                </span>
+
+                <h2>
+                    Multiple layers of protection
+                </h2>
+            </div>
+
+            <div class="security-status">
+                <span class="status-dot"></span>
+                Security Active
+            </div>
+
+        </div>
+
+
+        <div class="security-list">
+
+            <div class="security-item">
+
+                <div class="security-check">
+                    ✓
+                </div>
+
+                <div>
+                    <strong>Master Password Protection</strong>
+                    <span>
+                        Argon2id password hashing and key derivation
+                    </span>
+                </div>
+
+            </div>
+
+
+            <div class="security-item">
+
+                <div class="security-check">
+                    ✓
+                </div>
+
+                <div>
+                    <strong>Authenticated Encryption</strong>
+                    <span>
+                        AES-256-GCM protects sensitive vault fields
+                    </span>
+                </div>
+
+            </div>
+
+
+            <div class="security-item">
+
+                <div class="security-check">
+                    ✓
+                </div>
+
+                <div>
+                    <strong>CSRF Protection</strong>
+                    <span>
+                        State-changing requests require CSRF validation
+                    </span>
+                </div>
+
+            </div>
+
+
+            <div class="security-item">
+
+                <div class="security-check">
+                    ✓
+                </div>
+
+                <div>
+                    <strong>Login Rate Limiting</strong>
+                    <span>
+                        Rate limiting helps reduce automated login abuse
+                    </span>
+                </div>
+
+            </div>
+
+
+            <div class="security-item">
+
+                <div class="security-check">
+                    ✓
+                </div>
+
+                <div>
+                    <strong>Security Headers</strong>
+                    <span>
+                        Browser security policies are enabled
+                    </span>
+                </div>
+
+            </div>
+
+
+            <div class="security-item">
+
+                <div class="security-check">
+                    ✓
+                </div>
+
+                <div>
+                    <strong>Encrypted Backups</strong>
+                    <span>
+                        Vault exports contain encrypted credential blobs
+                    </span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- Developer -->
+
+<section class="developer-section">
+
+    <div class="developer-card">
+
+        <div class="developer-avatar">
+            MM
+        </div>
+
+        <div class="developer-content">
+
+            <span class="section-label">
+                PROJECT DEVELOPER
+            </span>
+
+            <h2>
+                MUZAFFAR MUSHTAQ
+            </h2>
+
+            <p>
+                Cybersecurity enthusiast and BS Computer Science student
+                focused on building practical security tools, defensive
+                applications and secure software systems.
+            </p>
+
+            <div class="developer-tags">
+
+                <span>Cybersecurity</span>
+                <span>Python</span>
+                <span>Web Security</span>
+                <span>Secure Development</span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- CTA -->
+
+<section class="final-cta">
+
+    <div class="cta-glow"></div>
+
+    <span class="section-label">
+        START SECURING YOUR CREDENTIALS
+    </span>
+
+    <h2>
+        Build your secure vault today.
+    </h2>
+
+    <p>
+        Protect your credentials with modern cryptographic
+        security controls.
+    </p>
+
+    <a
+        class="button primary large"
+        href="{{ url_for('auth.register') }}"
+    >
+        Create Your Vault →
+    </a>
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,13 @@
+services:
+  secure-password-manager:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      SECRET_KEY: "replace-with-a-random-secret-before-production"
+      DATABASE_URL: "sqlite:////app/instance/password_manager.db"
+      SESSION_COOKIE_SECURE: "false"
+    volumes:
+      - vault_data:/app/instance
+volumes:
+  vault_data:

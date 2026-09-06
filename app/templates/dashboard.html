@@ -1,0 +1,354 @@
+{% extends 'base.html' %}
+
+{% block title %}SecureVault Dashboard{% endblock %}
+
+{% block content %}
+
+<section class="dashboard-header">
+    <div>
+        <div class="eyebrow">
+            <span class="status-dot"></span>
+            SECURE VAULT
+        </div>
+        <h1>Your Password Vault</h1>
+        <p class="muted">
+            Your credentials are protected with authenticated encryption.
+            Only encrypted blobs are stored in the database.
+        </p>
+    </div>
+
+    <div class="header-actions">
+        <a class="button secondary" href="{{ url_for('vault.export_vault') }}">
+            <span>↓</span> Export Backup
+        </a>
+
+        <a class="button primary" href="{{ url_for('vault.new_entry') }}">
+            <span>＋</span> Add Credential
+        </a>
+    </div>
+</section>
+
+
+<!-- Security status -->
+<section class="security-banner">
+    <div class="security-icon">🛡</div>
+
+    <div class="security-content">
+        <strong>Vault Security Active</strong>
+        <span>
+            Credentials are encrypted before storage and protected by your master-password-derived vault key.
+        </span>
+    </div>
+
+    <div class="security-badge">
+        <span class="status-dot"></span>
+        Protected
+    </div>
+</section>
+
+
+<!-- Statistics -->
+<section class="stats-grid">
+
+    <article class="stat-card">
+        <div class="stat-icon purple">🔐</div>
+        <div>
+            <span class="stat-label">Total Credentials</span>
+            <strong class="stat-value">{{ entries|length }}</strong>
+            <span class="stat-description">Stored in your vault</span>
+        </div>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-icon blue">◈</div>
+        <div>
+            <span class="stat-label">Categories</span>
+            <strong class="stat-value">{{ categories|length }}</strong>
+            <span class="stat-description">Organized credential groups</span>
+        </div>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-icon green">✓</div>
+        <div>
+            <span class="stat-label">Encryption</span>
+            <strong class="stat-value">AES-256</strong>
+            <span class="stat-description">Authenticated encryption</span>
+        </div>
+    </article>
+
+</section>
+
+
+<!-- Search -->
+<section class="vault-panel">
+
+    <div class="panel-heading">
+        <div>
+            <h2>Credential Vault</h2>
+            <p class="muted">
+                Manage your encrypted credentials.
+            </p>
+        </div>
+
+        <a class="generator-link" href="{{ url_for('vault.password_generator') }}">
+            ⚡ Password Generator
+        </a>
+    </div>
+
+    <form class="search-panel" method="get">
+
+        <div class="search-input">
+            <span>⌕</span>
+            <input
+                type="search"
+                name="q"
+                value="{{ q }}"
+                placeholder="Search credentials..."
+                autocomplete="off"
+            >
+        </div>
+
+        <div class="category-select">
+            <select name="category">
+                <option value="">All categories</option>
+
+                {% for c in categories %}
+                    <option value="{{ c }}" {% if c == category %}selected{% endif %}>
+                        {{ c }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button class="button search-button" type="submit">
+            Search
+        </button>
+
+    </form>
+
+</section>
+
+
+<!-- Credentials -->
+<section class="credentials-section">
+
+    <div class="section-title">
+        <div>
+            <h2>
+                {% if q or category %}
+                    Search Results
+                {% else %}
+                    Your Credentials
+                {% endif %}
+            </h2>
+
+            <span class="result-count">
+                {{ entries|length }} credential{% if entries|length != 1 %}s{% endif %}
+            </span>
+        </div>
+    </div>
+
+
+    {% if entries %}
+
+        <div class="credential-grid">
+
+            {% for e in entries %}
+
+                <article class="credential-card">
+
+                    <div class="credential-top">
+
+                        <div class="credential-logo">
+                            {{ e.title[0]|upper if e.title else '?' }}
+                        </div>
+
+                        <div class="credential-info">
+                            <h3>{{ e.title }}</h3>
+
+                            <span class="category-badge">
+                                {{ e.category }}
+                            </span>
+                        </div>
+
+                        <div class="credential-menu">
+                            <span class="encrypted-indicator" title="Encrypted credential">
+                                ●
+                            </span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="credential-meta">
+
+                        <div class="meta-row">
+                            <span class="meta-label">Username</span>
+                            <span class="meta-value masked-value">
+                                Encrypted
+                            </span>
+                        </div>
+
+                        <div class="meta-row">
+                            <span class="meta-label">Password</span>
+                            <span class="meta-value password-mask">
+                                ••••••••••••••
+                            </span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="credential-footer">
+
+                        <span class="updated-time">
+                            Updated
+                            {{ e.updated_at.strftime('%Y-%m-%d %H:%M') if e.updated_at else '' }}
+                        </span>
+
+                        <div class="credential-actions">
+
+                            <a
+                                class="action-button view"
+                                href="{{ url_for('vault.view_entry', entry_id=e.id) }}"
+                            >
+                                View
+                            </a>
+
+                            <a
+                                class="action-button edit"
+                                href="{{ url_for('vault.edit_entry', entry_id=e.id) }}"
+                            >
+                                Edit
+                            </a>
+
+                            <form
+                                method="post"
+                                action="{{ url_for('vault.delete_entry', entry_id=e.id) }}"
+                                onsubmit="return confirm('Delete this credential permanently?')"
+                            >
+
+                                <input
+                                    type="hidden"
+                                    name="csrf_token"
+                                    value="{{ csrf_token() }}"
+                                >
+
+                                <button
+                                    class="action-button delete"
+                                    type="submit"
+                                >
+                                    Delete
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <div class="empty-icon">
+                🔐
+            </div>
+
+            <h3>
+                {% if q or category %}
+                    No credentials found
+                {% else %}
+                    Your vault is empty
+                {% endif %}
+            </h3>
+
+            <p>
+                {% if q or category %}
+                    Try another search term or category.
+                {% else %}
+                    Add your first credential to start building your encrypted vault.
+                {% endif %}
+            </p>
+
+            {% if q or category %}
+
+                <a
+                    class="button secondary"
+                    href="{{ url_for('vault.dashboard') }}"
+                >
+                    Clear Filters
+                </a>
+
+            {% else %}
+
+                <a
+                    class="button primary"
+                    href="{{ url_for('vault.new_entry') }}"
+                >
+                    ＋ Add Your First Credential
+                </a>
+
+            {% endif %}
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+
+<!-- Bottom security information -->
+<section class="security-info-grid">
+
+    <article class="info-card">
+        <div class="info-icon">🔒</div>
+
+        <div>
+            <h3>Encrypted Storage</h3>
+            <p>
+                Sensitive credential fields are encrypted before being stored.
+            </p>
+        </div>
+    </article>
+
+    <article class="info-card">
+        <div class="info-icon">⚡</div>
+
+        <div>
+            <h3>Secure Generator</h3>
+            <p>
+                Generate strong random passwords using the secure password generator.
+            </p>
+        </div>
+
+        <a href="{{ url_for('vault.password_generator') }}">
+            Open
+        </a>
+    </article>
+
+    <article class="info-card">
+        <div class="info-icon">📦</div>
+
+        <div>
+            <h3>Encrypted Backup</h3>
+            <p>
+                Export your encrypted vault data for backup purposes.
+            </p>
+        </div>
+
+        <a href="{{ url_for('vault.export_vault') }}">
+            Export
+        </a>
+    </article>
+
+</section>
+
+{% endblock %}

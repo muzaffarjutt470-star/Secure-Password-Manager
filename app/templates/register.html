@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Create Vault | SecureVault{% endblock %}
+
+{% block content %}
+<section class="auth-page">
+    <div class="auth-card">
+
+        <div class="auth-header">
+            <div class="auth-icon">🛡️</div>
+            <span class="section-label">CREATE SECURE VAULT</span>
+            <h1>Protect your credentials</h1>
+            <p>
+                Create your SecureVault account and start storing
+                credentials with modern cryptographic protection.
+            </p>
+        </div>
+
+        <form method="post" class="auth-form">
+
+            <input type="hidden"
+                   name="csrf_token"
+                   value="{{ csrf_token() }}">
+
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    placeholder="Choose a username"
+                    autocomplete="username"
+                    minlength="3"
+                    required
+                    autofocus
+                >
+                <small class="form-help">
+                    Use a unique username for your vault.
+                </small>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Master Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Create a strong master password"
+                    autocomplete="new-password"
+                    minlength="12"
+                    required
+                >
+                <small class="form-help">
+                    Use a long, unique master password.
+                </small>
+            </div>
+
+            <div class="password-requirements">
+                <div class="requirements-title">
+                    <span>🔑</span>
+                    Master password security
+                </div>
+
+                <ul>
+                    <li>Use at least 12 characters</li>
+                    <li>Mix uppercase and lowercase letters</li>
+                    <li>Include numbers and symbols</li>
+                    <li>Never reuse your master password</li>
+                </ul>
+            </div>
+
+            <button type="submit" class="auth-submit">
+                Create Secure Vault
+                <span>→</span>
+            </button>
+        </form>
+
+        <div class="auth-security">
+            <div class="security-mini">
+                <span>🔐</span>
+                <div>
+                    <strong>Argon2id</strong>
+                    <small>Strong password protection</small>
+                </div>
+            </div>
+
+            <div class="security-mini">
+                <span>🛡️</span>
+                <div>
+                    <strong>AES-256-GCM</strong>
+                    <small>Authenticated encryption</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="auth-footer">
+            <p>
+                Already have a vault?
+                <a href="{{ url_for('auth.login') }}">
+                    Sign in
+                </a>
+            </p>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

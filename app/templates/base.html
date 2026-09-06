@@ -1,0 +1,225 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+
+    <meta
+        name="robots"
+        content="noindex,nofollow"
+    >
+
+    <meta
+        name="description"
+        content="SecureVault — Local-first password manager with modern encryption."
+    >
+
+    <title>
+        {% block title %}
+            SecureVault — Secure Password Manager
+        {% endblock %}
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+
+<header class="nav">
+
+    <a
+        class="brand"
+        href="{{ url_for('index') }}"
+    >
+        <span class="brand-mark">◆</span>
+
+        <span>
+            Secure<span class="brand-accent">Vault</span>
+        </span>
+    </a>
+
+
+    {% if session.get('user_id') %}
+
+    <nav class="nav-links">
+
+        <a href="{{ url_for('vault.dashboard') }}">
+            Vault
+        </a>
+
+        <a href="{{ url_for('vault.new_entry') }}">
+            Add
+        </a>
+
+        <a href="{{ url_for('vault.password_generator') }}">
+            Generator
+        </a>
+
+        <form
+            method="post"
+            action="{{ url_for('auth.logout') }}"
+        >
+
+            <input
+                type="hidden"
+                name="csrf_token"
+                value="{{ csrf_token() }}"
+            >
+
+            <button
+                type="submit"
+                class="nav-logout"
+            >
+                Logout
+            </button>
+
+        </form>
+
+    </nav>
+
+    {% else %}
+
+    <nav class="nav-links">
+
+        <a href="{{ url_for('auth.login') }}">
+            Sign In
+        </a>
+
+        <a
+            class="nav-register"
+            href="{{ url_for('auth.register') }}"
+        >
+            Create Vault
+        </a>
+
+    </nav>
+
+    {% endif %}
+
+</header>
+
+
+<main class="container">
+
+    {% with messages = get_flashed_messages() %}
+
+        {% if messages %}
+
+            <div class="flash">
+
+                {% for message in messages %}
+
+                    <div>
+                        {{ message }}
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+
+    {% endwith %}
+
+
+    {% block content %}{% endblock %}
+
+</main>
+
+
+<footer class="site-footer">
+
+    <div class="footer-main">
+
+        <div class="footer-brand">
+
+            <a
+                class="brand"
+                href="{{ url_for('index') }}"
+            >
+                <span class="brand-mark">◆</span>
+
+                <span>
+                    Secure<span class="brand-accent">Vault</span>
+                </span>
+            </a>
+
+            <p>
+                Local-first password storage with modern
+                cryptographic protection.
+            </p>
+
+        </div>
+
+
+        <div class="footer-security">
+
+            <span class="footer-label">
+                SECURITY
+            </span>
+
+            <div class="footer-security-items">
+
+                <span>
+                    🔐 Argon2id
+                </span>
+
+                <span>
+                    🛡️ AES-256-GCM
+                </span>
+
+                <span>
+                    ✓ CSRF Protected
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="footer-bottom">
+
+        <span>
+            © 2026 SecureVault
+        </span>
+
+        <span class="footer-divider">
+            •
+        </span>
+
+        <span>
+            Developed by
+            <strong>MUZAFFAR MUSHTAQ</strong>
+        </span>
+
+        <span class="footer-divider">
+            •
+        </span>
+
+        <span>
+            Cybersecurity Project
+        </span>
+
+    </div>
+
+</footer>
+
+
+</body>
+
+</html>

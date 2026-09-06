@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Sign In | SecureVault{% endblock %}
+
+{% block content %}
+<section class="auth-page">
+    <div class="auth-card">
+
+        <div class="auth-header">
+            <div class="auth-icon">🔐</div>
+            <span class="section-label">SECURE ACCESS</span>
+            <h1>Welcome back</h1>
+            <p>
+                Sign in to access your encrypted password vault.
+            </p>
+        </div>
+
+        <form method="post" class="auth-form">
+
+            <input type="hidden"
+                   name="csrf_token"
+                   value="{{ csrf_token() }}">
+
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    placeholder="Enter your username"
+                    autocomplete="username"
+                    required
+                    autofocus
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Master Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Enter your master password"
+                    autocomplete="current-password"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="auth-submit">
+                Sign In to SecureVault
+                <span>→</span>
+            </button>
+        </form>
+
+        <div class="auth-security">
+            <div class="security-mini">
+                <span>🔒</span>
+                <div>
+                    <strong>Protected Authentication</strong>
+                    <small>Argon2id password protection</small>
+                </div>
+            </div>
+
+            <div class="security-mini">
+                <span>🛡️</span>
+                <div>
+                    <strong>Encrypted Vault</strong>
+                    <small>AES-256-GCM field encryption</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="auth-footer">
+            <p>
+                Don't have a vault?
+                <a href="{{ url_for('auth.register') }}">
+                    Create one
+                </a>
+            </p>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,510 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if entry %}Edit Credential{% else %}Add Credential{% endif %} | SecureVault
+{% endblock %}
+
+{% block content %}
+
+<section class="credential-page">
+
+    <div class="credential-shell">
+
+        <!-- Page Header -->
+        <div class="credential-header">
+
+            <div class="credential-heading">
+                <a href="{{ url_for('vault.dashboard') }}" class="back-link">
+                    ← Back to Vault
+                </a>
+
+                <div class="credential-title-row">
+                    <div class="credential-page-icon">
+                        {% if entry %}
+                            ✏️
+                        {% else %}
+                            🔐
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <span class="section-label">
+                            {% if entry %}
+                                EDIT CREDENTIAL
+                            {% else %}
+                                NEW CREDENTIAL
+                            {% endif %}
+                        </span>
+
+                        <h1>
+                            {% if entry %}
+                                Update credential
+                            {% else %}
+                                Add a secure credential
+                            {% endif %}
+                        </h1>
+
+                        <p>
+                            {% if entry %}
+                                Update the selected credential securely.
+                            {% else %}
+                                Store a username, password and other sensitive
+                                information inside your encrypted vault.
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="encryption-status">
+                <span class="status-dot"></span>
+                <div>
+                    <strong>Encryption Active</strong>
+                    <small>AES-256-GCM protected</small>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- Main Form -->
+        <form
+            method="post"
+            class="credential-form"
+            id="credentialForm"
+        >
+
+            <input
+                type="hidden"
+                name="csrf_token"
+                value="{{ csrf_token() }}"
+            >
+
+            <div class="credential-grid">
+
+                <!-- Main Form Card -->
+                <div class="credential-main-card">
+
+                    <div class="card-heading">
+                        <div class="card-heading-icon">🔑</div>
+
+                        <div>
+                            <h2>Credential details</h2>
+                            <p>Enter the information you want to protect.</p>
+                        </div>
+                    </div>
+
+
+                    <!-- Title -->
+                    <div class="form-group">
+                        <label for="title">
+                            Credential Name
+                            <span class="required">*</span>
+                        </label>
+
+                        <input
+                            type="text"
+                            id="title"
+                            name="title"
+                            value="{{ entry.title if entry else '' }}"
+                            placeholder="e.g. GitHub, Gmail, LinkedIn"
+                            maxlength="120"
+                            autocomplete="off"
+                            required
+                        >
+
+                        <small>
+                            Give this credential a recognizable name.
+                        </small>
+                    </div>
+
+
+                    <!-- Username -->
+                    <div class="form-group">
+                        <label for="username">
+                            Username / Email
+                        </label>
+
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            value="{{ entry.username if entry else '' }}"
+                            placeholder="username@example.com"
+                            autocomplete="username"
+                        >
+                    </div>
+
+
+                    <!-- Password -->
+                    <div class="form-group">
+
+                        <div class="field-label-row">
+                            <label for="password">
+                                Password
+                            </label>
+
+                            <button
+                                type="button"
+                                class="generate-inline-btn"
+                                id="generatePasswordBtn"
+                            >
+                                🎲 Generate Strong Password
+                            </button>
+                        </div>
+
+                        <div class="password-input-wrapper">
+
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                value=""
+                                placeholder="{% if entry %}Enter a new password or leave unchanged{% else %}Enter a strong password{% endif %}"
+                                autocomplete="new-password"
+                                {% if not entry %}required{% endif %}
+                            >
+
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                id="togglePassword"
+                                aria-label="Show password"
+                                title="Show password"
+                            >
+                                👁️
+                            </button>
+
+                        </div>
+
+                        <!-- Password Strength -->
+                        <div
+                            class="password-strength"
+                            id="passwordStrength"
+                        >
+                            <div class="strength-header">
+                                <span>Password strength</span>
+                                <strong id="strengthLabel">
+                                    Not evaluated
+                                </strong>
+                            </div>
+
+                            <div class="strength-bar">
+                                <div
+                                    class="strength-progress"
+                                    id="strengthProgress"
+                                ></div>
+                            </div>
+
+                            <div class="strength-checks">
+
+                                <span id="checkLength">
+                                    ○ 12+ characters
+                                </span>
+
+                                <span id="checkUpper">
+                                    ○ Uppercase
+                                </span>
+
+                                <span id="checkLower">
+                                    ○ Lowercase
+                                </span>
+
+                                <span id="checkNumber">
+                                    ○ Number
+                                </span>
+
+                                <span id="checkSymbol">
+                                    ○ Symbol
+                                </span>
+
+                            </div>
+                        </div>
+
+                        {% if entry %}
+                        <small>
+                            Leave the password empty if you do not want to
+                            change the existing encrypted password.
+                        </small>
+                        {% else %}
+                        <small>
+                            Use a long, unique password. SecureVault encrypts
+                            the stored credential before database storage.
+                        </small>
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- URL -->
+                    <div class="form-group">
+
+                        <label for="url">
+                            Website / URL
+                        </label>
+
+                        <input
+                            type="url"
+                            id="url"
+                            name="url"
+                            value="{{ entry.url if entry else '' }}"
+                            placeholder="https://example.com"
+                            autocomplete="url"
+                        >
+
+                    </div>
+
+
+                    <!-- Category -->
+                    <div class="form-group">
+
+                        <label for="category">
+                            Category
+                        </label>
+
+                        <select
+                            id="category"
+                            name="category"
+                        >
+
+                            {% set current_category = entry.category if entry else '' %}
+
+                            <option value="">Select category</option>
+
+                            <option
+                                value="Development"
+                                {% if current_category == 'Development' %}selected{% endif %}
+                            >
+                                💻 Development
+                            </option>
+
+                            <option
+                                value="Social"
+                                {% if current_category == 'Social' %}selected{% endif %}
+                            >
+                                🌐 Social
+                            </option>
+
+                            <option
+                                value="Email"
+                                {% if current_category == 'Email' %}selected{% endif %}
+                            >
+                                ✉️ Email
+                            </option>
+
+                            <option
+                                value="Banking"
+                                {% if current_category == 'Banking' %}selected{% endif %}
+                            >
+                                💳 Banking
+                            </option>
+
+                            <option
+                                value="Work"
+                                {% if current_category == 'Work' %}selected{% endif %}
+                            >
+                                🏢 Work
+                            </option>
+
+                            <option
+                                value="Cloud"
+                                {% if current_category == 'Cloud' %}selected{% endif %}
+                            >
+                                ☁️ Cloud
+                            </option>
+
+                            <option
+                                value="Shopping"
+                                {% if current_category == 'Shopping' %}selected{% endif %}
+                            >
+                                🛒 Shopping
+                            </option>
+
+                            <option
+                                value="Other"
+                                {% if current_category == 'Other' %}selected{% endif %}
+                            >
+                                📁 Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Notes -->
+                    <div class="form-group">
+
+                        <label for="notes">
+                            Secure Notes
+                        </label>
+
+                        <textarea
+                            id="notes"
+                            name="notes"
+                            rows="6"
+                            maxlength="2000"
+                            placeholder="Add recovery information, security notes or other sensitive details..."
+                        >{{ entry.notes if entry else '' }}</textarea>
+
+                        <div class="textarea-footer">
+                            <small>
+                                Notes are protected as part of the encrypted vault.
+                            </small>
+
+                            <span id="notesCounter">0 / 2000</span>
+                        </div>
+
+                    </div>
+
+
+                    <!-- Actions -->
+                    <div class="form-actions">
+
+                        <a
+                            href="{{ url_for('vault.dashboard') }}"
+                            class="secondary-action"
+                        >
+                            Cancel
+                        </a>
+
+                        <button
+                            type="submit"
+                            class="primary-action"
+                        >
+                            <span>
+                                {% if entry %}
+                                    🔒 Update Credential
+                                {% else %}
+                                    🔒 Save Securely
+                                {% endif %}
+                            </span>
+
+                            <span>→</span>
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Security Sidebar -->
+                <aside class="credential-sidebar">
+
+                    <!-- Security Card -->
+                    <div class="side-card security-side-card">
+
+                        <div class="side-card-icon">
+                            🛡️
+                        </div>
+
+                        <span class="section-label">
+                            SECURITY
+                        </span>
+
+                        <h3>
+                            Your credential is protected
+                        </h3>
+
+                        <p>
+                            Sensitive vault fields are encrypted before
+                            being stored in the local database.
+                        </p>
+
+                        <div class="security-feature-list">
+
+                            <div class="security-feature">
+                                <span>✓</span>
+                                <div>
+                                    <strong>AES-256-GCM</strong>
+                                    <small>
+                                        Authenticated encryption
+                                    </small>
+                                </div>
+                            </div>
+
+                            <div class="security-feature">
+                                <span>✓</span>
+                                <div>
+                                    <strong>Fresh Nonces</strong>
+                                    <small>
+                                        Unique encryption nonce per operation
+                                    </small>
+                                </div>
+                            </div>
+
+                            <div class="security-feature">
+                                <span>✓</span>
+                                <div>
+                                    <strong>CSRF Protection</strong>
+                                    <small>
+                                        State-changing requests protected
+                                    </small>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Generator Card -->
+                    <div class="side-card generator-side-card">
+
+                        <div class="generator-icon">
+                            🎲
+                        </div>
+
+                        <h3>
+                            Need a stronger password?
+                        </h3>
+
+                        <p>
+                            Generate a random password using the built-in
+                            SecureVault password generator.
+                        </p>
+
+                        <button
+                            type="button"
+                            class="side-generate-btn"
+                            id="sidebarGenerateBtn"
+                        >
+                            Generate Password
+                            <span>→</span>
+                        </button>
+
+                    </div>
+
+
+                    <!-- Privacy Notice -->
+                    <div class="privacy-notice">
+
+                        <span>🔐</span>
+
+                        <div>
+                            <strong>Local-first storage</strong>
+
+                            <p>
+                                SecureVault is designed for local credential
+                                storage. Keep your vault and backups protected.
+                            </p>
+                        </div>
+
+                    </div>
+
+                </aside>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+{% endblock %}
+
